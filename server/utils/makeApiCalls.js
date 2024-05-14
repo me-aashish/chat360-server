@@ -14,10 +14,15 @@ async function makeApiCalls(){
         try {
             const response = await axios.get(API_URL_ARRAY[apiCallCount]);
 
-            writeToLogFile(loggingLevel, "API call done", new Date().toISOString(), API_URL_ARRAY[apiCallCount], filePath+"/log"+(apiCallCount+1)+".log");
+            if(apiCallCount % 2 == 0){
+                writeToLogFile(loggingLevel, "API call done", new Date().toISOString(), API_URL_ARRAY[apiCallCount], filePath+"/log"+(apiCallCount+1)+".log");
+            }
+            else{
+                writeToLogFile("error", "Failed to connect", new Date().toISOString(), API_URL_ARRAY[apiCallCount], filePath+"/log"+(apiCallCount+1)+".log");
+            }
 
         } catch (error) {
-            writeToLogFile(loggingLevel, error, new Date().toISOString(), API_URL_ARRAY[apiCallCount], filePath+"/log"+(apiCallCount+1)+".log");
+            writeToLogFile("error", error, new Date().toISOString(), API_URL_ARRAY[apiCallCount], filePath+"/log"+(apiCallCount+1)+".log");
         }
         apiCallCount++;
     }
