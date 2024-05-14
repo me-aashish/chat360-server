@@ -129,8 +129,75 @@ const logFilterByTimestamp = async(req,res) => {
     }
 }
 
+const multipleFilter = async(req,res) => {
+    try {
+        const filterObj = req.body;
+        console.log(filterObj);
+        if(!filterObj){
+            return res.status(400).json({ error: 'Property to filter by is missing in the request body' });
+        }
+
+        const filteredLogs = [];
+        const logsDirectory = path.join(__dirname, ".." , process.env.LOG_FILE_PATH); 
+            
+
+        const cacheKey = JSON.stringify(filterObj);
+        const cacheValue = await redisClient.get(cacheKey);
+
+        //if value is cached
+        if(cacheValue){
+            console.log("yes");
+            return res.status(200).json({
+            msg: "logs filtered on the basis of multiple filters",
+            result: JSON.parse(cacheValue),
+            });
+        }
+
+
+        fs.readdirSync(logsDirectory).forEach((file) => {
+            if (path.extname(file) === '.log') {
+                const filePath = path.join(logsDirectory, file);
+                let fileContent = fs.readFileSync(filePath, 'utf-8');
+                fileContent = JSON.parse(fileContent)
+                let matchCount = 0;
+                filterObj.forEach((obj) => {
+                    if(obj.property == "metadata"){
+                        if(new RegExp(obj.value, "i").test(fileContent[obj.property].source)) matchCount++;
+                    }
+                    else if(new RegExp(obj.value, "i").test(fileContent[obj.property])) matchCount++;
+                })
+                console.log(matchCount);
+                if(matchCount === filterObj.length) filteredLogs.push(fileContent);
+
+            }
+    
+        });
+
+        if(filteredLogs.length > 0){
+            redisClient.set(cacheKey, JSON.stringify(filteredLogs));
+            // redisClient[cacheKey] = JSON.stringify(filteredLogs)
+            redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
+        }
+
+        return res.status(200).json({
+            msg: "logs filtered on the basis of muliple filters",
+            result: filteredLogs
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            msg: "error occured",
+            result: error,
+        });
+        console.log(error);
+    }
+
+
+}
+
 
 module.exports = {
     logFilter,
-    logFilterByTimestamp
+    logFilterByTimestamp,
+    multipleFilter
 }
