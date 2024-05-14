@@ -142,7 +142,7 @@ const multipleFilter = async(req,res) => {
             
 
         const cacheKey = JSON.stringify(filterObj);
-        const cacheValue = await redisClient.get(cacheKey);
+        const cacheValue = redisClient[cacheKey];
 
         //if value is cached
         if(cacheValue){
@@ -174,9 +174,9 @@ const multipleFilter = async(req,res) => {
         });
 
         if(filteredLogs.length > 0){
-            redisClient.set(cacheKey, JSON.stringify(filteredLogs));
-            // redisClient[cacheKey] = JSON.stringify(filteredLogs)
-            redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
+            // redisClient.set(cacheKey, JSON.stringify(filteredLogs));
+            redisClient[cacheKey] = JSON.stringify(filteredLogs)
+            // redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
         }
 
         return res.status(200).json({
@@ -185,11 +185,12 @@ const multipleFilter = async(req,res) => {
         });
 
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             msg: "error occured",
             result: error,
         });
-        console.log(error);
+        
     }
 
 
