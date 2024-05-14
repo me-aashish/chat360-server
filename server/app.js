@@ -6,7 +6,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const makeApiCalls = require("./utils/makeApiCalls");
 const apiRoutes = require("./routes/index");
-const redisClient = require("./redisClient");
 
 
 const setUpAndStartServer = async ()=>{

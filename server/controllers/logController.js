@@ -1,7 +1,8 @@
 require("dotenv").config();
 const fs = require('fs');
 const path = require('path');
-const redisClient = require("../redisClient");
+
+const redisClient = {}
 
 const logFilter = async(req,res) => {
     try {
@@ -14,7 +15,7 @@ const logFilter = async(req,res) => {
 
         //caching
         const cacheKey = `${filterProperty}:${filterValue}`;
-        const cacheValue = await redisClient.get(cacheKey);
+        const cacheValue = redisClient[cacheKey];
 
         //if value is present in cache
         if(cacheValue){
@@ -48,8 +49,9 @@ const logFilter = async(req,res) => {
 
         //in case of cache miss, add it to cache if filtered logs are not empty
         if(filteredLogs){
-            redisClient.set(cacheKey, JSON.stringify(filteredLogs));
-            redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
+            // redisClient.set(cacheKey, JSON.stringify(filteredLogs));
+            redisClient[cacheKey] = JSON.stringify(filteredLogs)
+            // redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
         }
 
         return res.status(200).json({
@@ -75,7 +77,7 @@ const logFilterByTimestamp = async(req,res) => {
         }
 
         const cacheKey = `${filterProperty}: ${startTime} and ${endTime}`;
-        const cacheValue = await redisClient.get(cacheKey);
+        const cacheValue = redisClient[cacheKey];
         console.log(cacheValue);
 
         //if value is cached
@@ -109,9 +111,10 @@ const logFilterByTimestamp = async(req,res) => {
         });
 
         ///in case of cache miss, add it to cache if filtered logs are not empty
-        if(filteredLogs){
-            redisClient.set(cacheKey, JSON.stringify(filteredLogs));
-            redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
+       if(filteredLogs){
+            // redisClient.set(cacheKey, JSON.stringify(filteredLogs));
+            redisClient[cacheKey] = JSON.stringify(filteredLogs)
+            // redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
         }
 
         return res.status(200).json({

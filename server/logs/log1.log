@@ -1,7 +1,7 @@
 {
-    "log_level": "error",
-    "log_message": "Failed to connect",
-    "timestamp": "2024-05-13T21:02:59.606Z",
+    "log_level": "info",
+    "log_message": "API call done",
+    "timestamp": "2024-05-14T08:44:56.258Z",
     "metadata": {
         "source": "https://fakestoreapi.com/products"
     }
