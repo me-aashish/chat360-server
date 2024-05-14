@@ -1,0 +1,8 @@
+{
+    "log_level": "error",
+    "log_message": "Failed to connect",
+    "timestamp": "2024-05-13T21:03:03.935Z",
+    "metadata": {
+        "source": "https://dog.ceo/api/breeds/image/random"
+    }
+}

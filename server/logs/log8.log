@@ -1,0 +1,8 @@
+{
+    "log_level": "success",
+    "log_message": "API call successfull",
+    "timestamp": "2024-05-13T21:03:05.451Z",
+    "metadata": {
+        "source": "http://universities.hipolabs.com"
+    }
+}
