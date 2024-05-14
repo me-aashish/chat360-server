@@ -36,11 +36,11 @@ const logFilter = async(req,res) => {
                 fileContent = JSON.parse(fileContent)
                 console.log(fileContent[filterProperty].source);
                 if(filterProperty == "metadata"){
-                    if(fileContent[filterProperty].source == filterValue){
+                    if( new RegExp(filterValue, 'i').test(fileContent[filterProperty].source)){
                     filteredLogs.push(fileContent);
                 }
                 }
-                else if(fileContent[filterProperty] == filterValue){
+                else if(new RegExp(filterValue, 'i').test(fileContent[filterProperty])){
                     filteredLogs.push(fileContent);
                 }
 
@@ -48,7 +48,7 @@ const logFilter = async(req,res) => {
         });
 
         //in case of cache miss, add it to cache if filtered logs are not empty
-        if(filteredLogs){
+        if(filteredLogs.length > 0){
             // redisClient.set(cacheKey, JSON.stringify(filteredLogs));
             redisClient[cacheKey] = JSON.stringify(filteredLogs)
             // redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
@@ -111,7 +111,7 @@ const logFilterByTimestamp = async(req,res) => {
         });
 
         ///in case of cache miss, add it to cache if filtered logs are not empty
-       if(filteredLogs){
+       if(filteredLogs.length > 0){
             // redisClient.set(cacheKey, JSON.stringify(filteredLogs));
             redisClient[cacheKey] = JSON.stringify(filteredLogs)
             // redisClient.expire(cacheKey, 3600) //setting TTL to 1 hour
